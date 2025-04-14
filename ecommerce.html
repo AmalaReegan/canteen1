@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALU CanteenEase - Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+        }
+        .buttons {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .buttons button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+           
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .buttons button:hover {
+            background: darkred;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .product, .cart-item, .review-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            /* background-color: aqua; */
+        }
+        .product h5{
+            /* background-color: red; */
+            /* font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; */
+            /* font-size: 3vh;  */
+            /* font-family: "Audiowide", sans-serif; */
+            font-family: "Audiowide", sans-serif;
+        }
+        .product img {
+            max-width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .cart-container, .review-container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .cart-item, .review-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .review-form input, .review-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .review-form button {
+            padding: 10px;
+            background: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .review-form button:hover {
+            background: darkgreen;
+        }
+    </style>
+    <!-- Springboot style -->
+     
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide">
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h2>About Us</h2>
+            <p>Contact: 8489195906</p>
+            <p>Email: alu.canteenease@alu.com</p>
+        </div>
+        <div>
+            <h1 class="btn btn-info">Welcome to ALU CanteenEase</h1>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <button class="btn btn-primary" onclick="loadProducts('tea')">🍵 Hot Drinks</button>
+        <button class="btn btn-primary" onclick="loadProducts('snacks')">🍟 Snacks</button>
+        <button class="btn btn-primary" onclick="loadProducts('juice')">🧃 Juice</button>
+        <button class="btn btn-primary" onclick="loadProducts('icecream')">🍦 Ice Cream</button>
+        <button class="btn btn-primary" onclick="loadProducts('food')">🍲 Food</button>
+        <button class="btn btn-primary" onclick="viewCart()">View Cart</button>
+    </div>
+
+    <div class="container" id="productContainer"></div>
+
+    <div class="cart-container" id="cartContainer" style="display: none;">
+        <h2>Your Cart</h2>
+        <div id="cartItems"></div>
+        <h3>Total: ₹<span id="totalPrice">0</span></h3>
+    </div>
+
+    <div class="review-container">
+        <h2>Leave a Review</h2>
+        <div class="review-form">
+            <input type="text" id="reviewerName" placeholder="Your Name" required>
+            <textarea id="reviewText" placeholder="Write your review here..." required></textarea>
+            <button onclick="submitReview()">Submit Review</button>
+        </div>
+        <h2>Reviews</h2>
+        <div id="reviewsList"></div>
+    </div>
+
+    <script>
+        let cart = {};
+        let reviews = [];
+
+        const products = {
+            tea: [
+                { id: "Milk-1", name: "Tea", price: 15, image: "tea.jpg" },  
+                { id: "Tea-2", name: "Masala Tea", price: 15, image: "masalatea.jpg" }, 
+                { id: "Tea-3", name: "Green Tea", price: 15, image: "green_tea.jpg" },
+                { id: "Tea-4", name: "Ginger Tea", price: 20, image: "ginger_tea.jpg" },
+                { id: "Milk-5", name: "BlackTea", price: 15, image: "blacktea.jpg" },
+                { id: "Coffe-6", name: "Coffe", price: 20, image: "coffe.jpg" },
+                { id: "Milk-7", name: "BlackCoffee", price: 15, image: "blackcoffee.jpg" },
+                { id: "Milk-8", name: "SukkuMalliCoffee", price: 15, image: "sukkumallicoffee.jpg" },
+                { id: "Boost-9", name: "Boost", price: 20, image: "boost.jpg" },
+                { id: "Horlicks-10", name: "Horlicks", price: 20, image: "horlicks.jpg" },
+                { id: "Milk-11", name: "Milk", price: 15, image: "milk.jpg" },
+                { id: "Milk-12", name: "BadamMilk", price: 15, image: "badammilk.jpg" },
+                { id: "Milk-13", name: "HotChoculate", price: 15, image: "hotchoculate.jpg" }
+                ],
+                
+            snacks: [
+                { id: "food-1", name: "UlunduVada(1 piece)", price: 6, image: "ulunduvada.jpg" },
+                { id: "food-2", name: "MasalaVadai(1 piece)", price: 6, image: "masalavadai.jpg" },
+                { id: "snacks-3", name:"Samosa(2 Piece)", price: 10, image: "samosa.jpg" },
+                { id: "snacks-4", name:"Bajji(3 Piece)", price: 15, image: "bajji.jpg" },
+                { id: "snacks-5", name:"Mirchi Bajji(3 Piece)", price: 15, image: "mirchi bajji.jpg" },
+                { id: "snacks-6", name:"Bonda(3 Piece)", price: 15, image: " bonda.jpg" },
+                { id: "snacks-7", name:" Halls(1 Piece)", name:"1 piece", price: 1, image: " halls.jpg" },
+                { id: "snacks-8", name: "Mysore pak(1 Piece)", price: 5, image: " mysore pak.jpg" },
+                { id: "snacks-9", name: "Beanut sesame(1 Piece)", price: 5, image: " peanut sesame.jpg" },
+                { id: "snacks-10", name: "Special kai murukku(1 Piece)", price: 5, image:"Special kai murukku.jpg" },
+                { id: "snacks-11", name: "Thatta murukku(1 Piece)", price: 5, image: "Thatta murukku.jpg" },
+                { id: "snacks-12", name: "Kurkure", price: 10, image: "kurkure.jpg " },
+                { id: "snacks-13", name: "Bingo", price: 10, image: "bingo.jpg" },
+                { id: "snacks-14", name: "Green Lays", price: 10, image: "green lays.jpg" },
+                { id: "snacks-15", name: "Red Lays", price: 10, image: "red lays.jpg" },
+                { id: "snacks-16", name: "yellow Lays", price: 10, image: "yellow lays.jpg" },
+                { id: "snacks-17", name: "Salt-Cookies", price: 10, image: "salt-cookies.jpg" },
+                { id: "snacks-18", name: "chocolates-Cookie-Biscuit", price: 10, image: "chocolates-cookie-biscuit.jpg" },
+                { id: "snacks-19", name: "Ajwain-Cookies", price: 10, image: "ajwain-cookies.jpg" },
+                { id: "snacks-20", name: "Krunch Chocochip Biscuit", price: 10, image: "Krunch Chocochip Biscuit.jpg" },
+                { id: "snacks-21", name: "Bounce", price: 10, image: "bounce.jpg" },
+                { id: "snacks-22", name: "JimJam", price: 10, image: "jimjam.jpg" },
+                { id: "snacks-23", name: "Happy-Happy", price: 10, image: "happyhappy.jpg" },
+                { id: "snacks-24", name: "Good Day", price: 10, image: "goodday.jpg" },
+                { id: "snacks-25", name: "Marie Gold", price: 10, image: "mariegold.jpg" },
+                { id: "snacks-26", name: "50-50", price: 10, image: "50-50.jpg" },
+                { id: "snacks-27", name: "MilkBikis", price: 10, image: "milkbikis.jpg" },
+                { id: "snacks-28", name: "Unibic", price: 10, image: "unibic.jpg" },
+                { id: "snacks-29", name: "Chocochip-Good-Gay", price: 10, image: "chocochipgoodday.jpg" },
+                { id: "snacks-30", name: "Britannia-Good-Day", price: 10, image: "britanniagoodday.jpg" },
+                { id: "snacks-31", name: "Strawberry-CreamBiscuits", price: 10, image: "strawberrycreambiscuits.jpg" },
+                { id: "snacks-32", name: "Oreo", price: 10, image: "oreo.jpg" },
+                { id: "snacks-33", name: "ElaichiCream-Biscuit", price: 10, image: "sunfeastbounceelaichicreambiscuit.jpg" },
+                { id: "snacks-34", name: "Bineapple-Creme-Cookies", price: 10, image: "pineapplecremecookies.jpg" },
+                { id: "snacks-35", name: "TigerChocolateBiscuits", price: 10, image: "tigerchocolatebiscuits.jpg" },
+                { id: "snacks-36", name: "Butter-Cookies", price: 10, image: "buttercookies.jpg" },
+                { id: "snacks-37", name: "Orangecreme-Cookies", price: 10, image: "orangecremecookies.jpg" }
+            ],
+            juice: [
+                { id: "snacks-1", name: "Maaza", price: 10, image: "maaza.jpg " },
+                { id: "snacks-2", name: "Tropicana", price: 10, image: "Tropicana.jpg" },
+                { id: "snacks-3", name: "Frooti", price: 10, image: "frooti.jpg" },
+                { id: "snacks-4", name: "Tata Gulco", price: 10, image: "tata gulco.jpg " },
+                { id: "snacks-5", name: "ButterScotchShake", price: 40, image: "butterscotchshake.jpg" },
+                { id: "snacks-6", name: "ChocolateShake", price: 50, image: "chocolateshake.jpg" },
+                { id: "snacks-7", name: "KajuButterScotch", price: 45, image: "kajubutterscotch.jpg " },
+                { id: "snacks-8", name: "CavinsMilkShake", price: 50, image: "cavinsmilkshake.jpg" },
+                { id: "snacks-9", name: "ChocoNutShake", price: 50, image: "choconutshake.jpg" },
+                { id: "snacks-10", name: "AmulMilkShake", price: 50, image: "amulmilkshake.jpg" },
+                { id: "snacks-11", name: "CoffeeMilkShake", price: 50, image: "coffeemilkshake.jpg" },
+                { id: "snacks-12", name: "Fizz", price: 10, image: "fizz.jpg " },
+                { id: "snacks-13", name: "7 Up", price: 10, image: "7 Up.jpg" },
+                { id: "snacks-14", name: "Mirinda", price: 15, image: "mirinda.jpg " },
+                { id: "snacks-15", name: "Bovondo", price: 15, image: "bovondo.jpg " },
+                { id: "snacks-16", name: "Kalimark Paneer", price: 15, image: "Kalimark paneer.jpg " },
+                { id: "snacks-17", name: "Slice", price: 15, image: "slice.jpg " },
+                { id: "snacks-18", name: "Badam", price: 25, image: "badam.jpg" },
+                { id: "snacks-19", name: "FruitJump", price: 15, image: "fruitjump.jpg" },
+                { id: "snacks-20", name: "HariomMango", price: 20, image: "hariommango.jpg" },
+                { id: "snacks-21", name: "Fruttu", price: 15, image: "fruttu.jpg" },
+                { id: "snacks-22", name: "Trapicana", price: 15, image: "trapicana.jpg" },
+                { id: "snacks-23", name: "Nimbooz", price: 22, image: "nimbooz.jpg" }
+
+
+               
+            ],
+            icecream: [
+                { id: "icecream-1", name: "Chocobar", price: 20, image: "chocobar.jpg" },
+                { id: "icecream-2", name: "Mango", price: 10, image: "mango.jpg" },
+                { id: "icecream-3", name: "Limonlik", price: 10, image: "lemonlik.jpg" },
+                { id: "icecream-4", name: "Orange", price: 10, image: "orange.jpg" },
+                { id: "icecream-5", name: "Butterscotch", price: 50, image: "butterscotch.jpg" },
+                { id: "icecream-6", name: "Chocolate", price: 50, image: "chocolate.jpg" },
+                { id: "icecream-8", name: "Blueberry", price: 50, image: "blueberry.jpg" },
+                { id: "icecream-9", name: "Berryvenilla", price: 40, image: "berryvenilla.jpg" },
+                { id: "icecream-10",name: "Cornetto", price: 60, image: "cornetto.jpg" },
+                { id: "icecream-11",name: "Oreo-Cornetto", price: 60, image: "Oreocornetto.jpg" },
+                { id: "icecream-12",name: "Vanilla", price: 40, image: "vanilla.jpg" },
+                { id: "icecream-13", name: "MalaiKulfi", price: 45, image: "malaikulfi.jpg" },
+                { id: "icecream-14", name: "MavaKulfi", price: 45, image: "mavakulfi.jpg" },
+                { id: "icecream-15", name: "Gulkandkulfi", price: 45, image: "gulkandkulfi.jpg" },
+                { id: "icecream-16", name: "PistaKulfi", price: 45, image: "pistakulfi.jpg" },
+                { id: "icecream-17", name: "KeserBadamKulfi", price: 45, image: "keserbadamkulfi.jpg" },
+                { id: "icecream-18", name: "", price: 45, image: "" },
+                { id: "icecream-19", name: "", price: 45, image: "" },
+                { id: "icecream-20", name: "", price: 45, image: "" },
+                { id: "icecream-21", name: "", price: 45, image: "" },
+                { id: "icecream-22", name: "", price: 45, image: "" }
+            ],
+            food: [
+                { id: "food-1", name: "UlunduVada(1 piece)", price: 6, image: "ulunduvada.jpg" },
+                { id: "food-2", name: "MasalaVadai(1 piece)", price: 6, image: "masalavadai.jpg" },
+                { id: "food-3", name: "Idli(1 piece)", price: 8, image: "idli.jpg" },
+                { id: "food-4", name: "IdiyappamSet", price: 30, image: "idiyappamset.jpg" },
+                { id: "food-5", name: "Venpongal", price: 30, image: "venpongal.jpg" },
+                { id: "food-6", name: "PooriSet", price: 30, image: "pooriset.jpg" },
+                { id: "food-7", name: "ParottaSet", price: 30, image: "parottaset.jpg" },
+                { id: "food-8", name: "PlainUttapam(1 piece)", price: 15, image: "plainuttapam.jpg" },
+                { id: "food-9", name: "OnionUttapam(1 piece)", price: 20, image: "onionuttapam.jpg" },
+                { id: "food-10", name: "egguthappam(1 piece)", price: 20, image: "egguthappam.jpg" },
+                { id: "food-11", name: "Thosai(1 piece)", price: 20, image: "thosai.jpg" },
+                { id: "food-12", name: "PodiThosai(1 piece)", price: 25, image: "podithosai.jpg" },
+                { id: "food-13", name: "NeiThosai(1 piece)", price: 30, image: "neithosai.jpg" },
+                { id: "food-14", name: "EggDosa(1 piece)", price: 30, image: "eggdosa.jpg" },
+                { id: "food-15", name: "OnionDosa(1 piece)", price: 30, image: "oniondosa.jpg" },
+                { id: "food-16", name: "MasalaDosa(1 piece)", price: 25, image: "masaladosa.jpg" },
+                { id: "food-17", name: "Curd Rice", price: 30, image: "curdrice.jpg" },
+                { id: "food-18", name: "LemonRice", price: 30 , image: "lemonrice.jpg" },
+                { id: "food-19", name: "TomatoRice", price: 30, image: "tomatorice.jpg" },
+                { id: "food-20", name: "VegetableRice", price: 35, image: "vegetablerice.jpg" },
+                { id: "food-21", name: "EggRice", price: 40, image: "eggrice.jpg" },
+                { id: "food-22", name: "PlainBiryani", price: 50, image: "plainbiryani.jpg" },
+                { id: "food-23", name: "ChickenBiryani", price: 80, image: "chickenbiryani.jpg" }
+              
+            ],
+
+        };
+
+        function loadProducts(category) {
+            const container = document.getElementById("productContainer");
+            container.innerHTML = "";
+            if (!products[category]) return;
+
+            products[category].forEach(item => {
+                cart[item.id] = cart[item.id] || 0;
+                let product = document.createElement("div");
+                product.className = "product";
+                product.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <h5>${item.name}</h5>
+                    <p>₹${item.price.toFixed(2)}</p>
+                    <p>Added: <span id="count-${item.id}">${cart[item.id]}</span></p>
+                    <button class="btn btn-secondary" onclick="updateCart('${item.id}', 1)">Add to Cart</button >
+                    <button class="btn btn-success" onclick="updateCart('${item.id}', -1)">Remove</button>
+                `;
+                container.appendChild(product);
+            });
+        }
+
+        function updateCart(productId, change) {
+            if (!cart[productId]) cart[productId] = 0;
+            cart[productId] += change;
+            if (cart[productId] < 0) cart[productId] = 0;
+            document.getElementById(`count-${productId}`).innerText = cart[productId];
+        }
+
+        function viewCart() {
+            const cartContainer = document.getElementById('cartContainer');
+            const cartItemsContainer = document.getElementById('cartItems');
+            const totalPriceElement = document.getElementById('totalPrice');
+
+            cartContainer.style.display = 'block';
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+
+            for (const productId in cart) {
+                if (cart[productId] > 0) {
+                    const product = Object.values(products).flat().find(p => p.id === productId);
+                    if (!product) continue;
+
+                    const subtotal = product.price * cart[productId];
+                    total += subtotal;
+
+                    cartItemsContainer.innerHTML += `
+                        <div class="cart-item">
+                            <span>${product.name}</span>
+                            <span>Qty: ${cart[productId]}</span>
+                            <span>₹${product.price}</span>
+                            <span>Subtotal: ₹${subtotal}</span>
+                        </div>
+                    `;
+                }
+            }
+            totalPriceElement.innerText = total;
+        }
+
+        function submitReview() {
+            const name = document.getElementById("reviewerName").value;
+            const text = document.getElementById("reviewText").value;
+            if (name && text) {
+                reviews.push({ name, text });
+                displayReviews();
+                document.getElementById("reviewerName").value = "";
+                document.getElementById("reviewText").value = "";
+            }
+        }
+
+        function displayReviews() {
+            const reviewsList = document.getElementById("reviewsList");
+            reviewsList.innerHTML = reviews.map(r => `<div class="review-item"><strong>${r.name}:</strong> ${r.text}</div>`).join("");
+        }
+    </script>
+</body>
+</html>
